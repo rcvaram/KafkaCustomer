@@ -1,0 +1,97 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'maven-publish'
+    id 'signing'
+}
+
+group = 'io.github.rcvaram'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
+
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'io.github.rcvaram'
+            artifactId = 'KafkaCustomer'
+            version = '1.0'
+            from components.java
+            pom {
+                name = 'KafkaCustomer'
+                description = 'This is not a consumer for Kafka, It\'s a customer a for kafka who can get only specific message from kafka'
+                url = 'https://github.com/rcvaram/NullUtil'
+                inceptionYear = '2022'
+
+                licenses {
+                    license{
+                        name = 'MIT License'
+                        url = 'http://www.opensource.org/liceneses/mit-license.php'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'rcvaram'
+                        name = 'Sivaram Rasathurai'
+                        email = 'cvaram96@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git:https://github.com/rcvaram/NullUtil.git'
+                    developerConnection = 'scm:git:ssh://github.com/rcvaram/NullUtil.git'
+                    url = 'https://github.com/rcvaram/NullUtil'
+                }
+
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = project.properties["ossrhUsername"]
+                password = project.properties["ossrhPassword"]
+            }
+        }
+    }
+
+}
+
+signing {
+    sign publishing.publications.mavenJava
+
+}
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
