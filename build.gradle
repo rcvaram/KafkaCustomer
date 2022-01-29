@@ -1,5 +1,4 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'maven-publish'
@@ -7,7 +6,7 @@ plugins {
 }
 
 group = 'io.github.rcvaram'
-version = '0.0.1-SNAPSHOT'
+version '1.0'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -21,10 +20,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.kafka:spring-kafka'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    implementation 'org.springframework.kafka:spring-kafka:2.8.2'
+    testImplementation 'org.springframework.kafka:spring-kafka-test:2.8.2'
 }
 
 
@@ -47,11 +44,11 @@ publishing {
             pom {
                 name = 'KafkaCustomer'
                 description = 'This is not a consumer for Kafka, It\'s a customer a for kafka who can get only specific message from kafka'
-                url = 'https://github.com/rcvaram/NullUtil'
+                url = 'https://github.com/rcvaram/KafkaCustomer'
                 inceptionYear = '2022'
 
                 licenses {
-                    license{
+                    license {
                         name = 'MIT License'
                         url = 'http://www.opensource.org/liceneses/mit-license.php'
                     }
@@ -64,9 +61,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:git:https://github.com/rcvaram/NullUtil.git'
-                    developerConnection = 'scm:git:ssh://github.com/rcvaram/NullUtil.git'
-                    url = 'https://github.com/rcvaram/NullUtil'
+                    connection = 'scm:git:git:https://github.com/rcvaram/KafkaCustomer.git'
+                    developerConnection = 'scm:git:ssh://github.com/rcvaram/KafkaCustomer.git'
+                    url = 'https://github.com/rcvaram/KafkaCustomer'
                 }
 
             }
@@ -89,6 +86,7 @@ signing {
     sign publishing.publications.mavenJava
 
 }
+
 
 javadoc {
     if (JavaVersion.current().isJava9Compatible()) {
