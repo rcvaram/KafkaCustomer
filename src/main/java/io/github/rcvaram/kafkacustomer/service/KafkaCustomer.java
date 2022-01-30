@@ -1,6 +1,7 @@
 package io.github.rcvaram.kafkacustomer.service;
 
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
@@ -23,6 +24,9 @@ public class KafkaCustomer<K, V> extends AbstractConsumerSeekAware {
     private final int lockTimeOut;
 
     public KafkaCustomer(ConsumerFactory<K, V> consumerFactory, int maxPollSeconds, int lockTimeOut) {
+        final Map<String, Object> configurationProperties = consumerFactory.getConfigurationProperties();
+        configurationProperties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1);
+        consumerFactory.updateConfigs(configurationProperties);
         consumer = consumerFactory.createConsumer();
         this.maxPollSeconds = maxPollSeconds;
         this.lockTimeOut = lockTimeOut;
@@ -30,6 +34,7 @@ public class KafkaCustomer<K, V> extends AbstractConsumerSeekAware {
     }
 
     public ConsumerRecord<K, V> get(String topic, int partition, long topicOffset) throws InterruptedException, WakeupException {
+        ConsumerRecord<K, V> consumerRecord = new ConsumerRecord<>(topic, partition, -1, null, null);
         final boolean isAvailable = reentrantLock.tryLock(lockTimeOut, TimeUnit.SECONDS);
         if (isAvailable) {
             try {
@@ -40,7 +45,7 @@ public class KafkaCustomer<K, V> extends AbstractConsumerSeekAware {
                 final ConsumerRecords<K, V> poll = consumer.poll(Duration.ofSeconds(maxPollSeconds));
                 for (ConsumerRecord<K, V> kvConsumerRecord : poll) {
                     if (kvConsumerRecord.offset() == topicOffset) {
-                        return kvConsumerRecord;
+                        consumerRecord = kvConsumerRecord;
                     }
                 }
                 consumer.commitSync();
@@ -49,9 +54,9 @@ public class KafkaCustomer<K, V> extends AbstractConsumerSeekAware {
                 reentrantLock.unlock();
             }
         } else {
-            System.out.println(MessageFormat.format("Lock is not available, thread already waited for {0} seconds", lockTimeOut));
+            System.out.println(MessageFormat.format("Lock is not available, thread already waited for {0} seconds.", lockTimeOut));
         }
-        return new ConsumerRecord<>(topic, partition, -1, null, null);
+        return consumerRecord;
     }
 
 
@@ -79,7 +84,7 @@ public class KafkaCustomer<K, V> extends AbstractConsumerSeekAware {
                 reentrantLock.unlock();
             }
         } else {
-            System.out.println(MessageFormat.format("Lock is not available, thread already waited for {0} seconds", lockTimeOut));
+            System.out.println(MessageFormat.format("Lock is not available, thread already waited for {0} seconds.", lockTimeOut));
         }
         return records;
     }
