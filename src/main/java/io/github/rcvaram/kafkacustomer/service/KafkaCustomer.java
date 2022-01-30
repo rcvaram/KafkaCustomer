@@ -54,7 +54,7 @@ public class KafkaCustomer<K, V> extends AbstractConsumerSeekAware {
                 reentrantLock.unlock();
             }
         } else {
-            System.out.println(MessageFormat.format("Lock is not available, thread already waited for {0} seconds", lockTimeOut));
+            System.out.println(MessageFormat.format("Lock is not available, thread already waited for {0} seconds.", lockTimeOut));
         }
         return consumerRecord;
     }
@@ -84,7 +84,7 @@ public class KafkaCustomer<K, V> extends AbstractConsumerSeekAware {
                 reentrantLock.unlock();
             }
         } else {
-            System.out.println(MessageFormat.format("Lock is not available, thread already waited for {0} seconds", lockTimeOut));
+            System.out.println(MessageFormat.format("Lock is not available, thread already waited for {0} seconds.", lockTimeOut));
         }
         return records;
     }
