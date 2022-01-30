@@ -39,7 +39,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = 'io.github.rcvaram'
             artifactId = 'KafkaCustomer'
-            version = '1.0'
+            version = '1.0.1'
             from components.java
             pom {
                 name = 'KafkaCustomer'
