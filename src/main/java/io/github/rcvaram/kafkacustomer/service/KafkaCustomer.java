@@ -1,13 +1,10 @@
 package io.github.rcvaram.kafkacustomer.service;
 
 import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.listener.AbstractConsumerSeekAware;
 
 import java.text.MessageFormat;
 import java.time.Duration;
@@ -17,17 +14,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class KafkaCustomer<K, V> extends AbstractConsumerSeekAware {
+public class KafkaCustomer<K, V> {
     private final Consumer<K, V> consumer;
     private final ReentrantLock reentrantLock;
     private final int maxPollSeconds;
     private final int lockTimeOut;
 
-    public KafkaCustomer(ConsumerFactory<K, V> consumerFactory, int maxPollSeconds, int lockTimeOut) {
-        final Map<String, Object> configurationProperties = consumerFactory.getConfigurationProperties();
-        configurationProperties.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1);
-        consumerFactory.updateConfigs(configurationProperties);
-        consumer = consumerFactory.createConsumer();
+    public KafkaCustomer(Consumer<K, V> consumer, int maxPollSeconds, int lockTimeOut) {
+        this.consumer = consumer;
         this.maxPollSeconds = maxPollSeconds;
         this.lockTimeOut = lockTimeOut;
         this.reentrantLock = new ReentrantLock(true);
